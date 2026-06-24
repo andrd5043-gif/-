@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Управление пользователями{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        👥 Пользователи
+        <button onclick="document.getElementById('addModal').style.display='block'" class="btn btn-success">+ Добавить</button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>ФИО</th>
+                <th>Логин</th>
+                <th>Email</th>
+                <th>Роль</th>
+                <th>Отдел</th>
+                <th>Статус</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.UserID }}</td>
+                <td>{{ user.FullName }}</td>
+                <td>{{ user.Username }}</td>
+                <td>{{ user.Email }}</td>
+                <td>{{ user.role.RoleName }}</td>
+                <td>{{ user.Department or '-' }}</td>
+                <td>{% if user.IsActive %}✅ Активен{% else %}❌ Отключен{% endif %}</td>
+                <td>
+                    <a href="{{ url_for('admin_edit_user', user_id=user.UserID) }}" class="btn btn-sm">Изменить</a>
+                    
+                    {% if user.UserID != current_user.UserID %}
+                    <form method="post" action="{{ url_for('admin_delete_user', user_id=user.UserID) }}" 
+                          style="display: inline;" onsubmit="return confirm('Удалить пользователя {{ user.FullName }}?')">
+                        <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Модальное окно добавления (как было) -->
+<div id="addModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
+    <div style="background:white; width:500px; margin:50px auto; padding:30px; border-radius:8px;">
+        <h3>Добавить пользователя</h3>
+        <form method="post" action="{{ url_for('admin_add_user') }}">
+            <div class="form-group">
+                <label>ФИО</label>
+                <input type="text" name="full_name" required>
+            </div>
+            <div class="form-group">
+                <label>Логин</label>
+                <input type="text" name="username" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label>Роль</label>
+                <select name="role_id" required>
+                    {% for role in roles %}
+                    <option value="{{ role.RoleID }}">{{ role.RoleName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Отдел</label>
+                <input type="text" name="department">
+            </div>
+            <div class="form-group">
+                <label>Должность</label>
+                <input type="text" name="position">
+            </div>
+            <button type="submit" class="btn btn-success">Сохранить</button>
+            <button type="button" onclick="document.getElementById('addModal').style.display='none'" class="btn">Отмена</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

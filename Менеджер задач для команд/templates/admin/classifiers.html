@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Классификаторы{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">📁 Типы проектов</div>
+    <table>
+        <thead>
+            <tr><th>Код</th><th>Название</th><th>Описание</th></tr>
+        </thead>
+        <tbody>
+            {% for t in types %}
+            <tr>
+                <td>{{ t.TypeCode }}</td>
+                <td>{{ t.TypeName }}</td>
+                <td>{{ t.Description or '-' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <div class="card-header">📊 Статусы проектов</div>
+    <table>
+        <thead>
+            <tr><th>Код</th><th>Название</th><th>Цвет</th></tr>
+        </thead>
+        <tbody>
+            {% for s in statuses %}
+            <tr>
+                <td>{{ s.StatusCode }}</td>
+                <td>{{ s.StatusName }}</td>
+                <td><span style="display:inline-block; width:20px; height:20px; background:{{ s.ColorCode }}; border-radius:3px;"></span> {{ s.ColorCode }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

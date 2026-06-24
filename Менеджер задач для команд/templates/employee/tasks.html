@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Мои задачи{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">📋 Мои задачи</div>
+    
+    <div class="filters">
+        <form method="get" style="display: contents;">
+            <select name="status">
+                <option value="">Все статусы</option>
+                {% for s in statuses %}
+                <option value="{{ s.TaskStatusID }}" {% if request.args.get('status')|int == s.TaskStatusID %}selected{% endif %}>{{ s.StatusName }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn">Фильтр</button>
+        </form>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Проект</th>
+                <th>Задача</th>
+                <th>Описание</th>
+                <th>Статус</th>
+                <th>План/Факт часы</th>
+                <th>Срок</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in tasks %}
+            <tr>
+                <td>{{ t.project.ProjectName }}</td>
+                <td>{{ t.TaskName }}</td>
+                <td>{{ t.Description[:50] if t.Description else '-' }}...</td>
+                <td><span class="badge badge-{{ t.status.StatusCode }}">{{ t.status.StatusName }}</span></td>
+                <td>{{ t.PlannedHours or 0 }} / {{ t.ActualHours or 0 }}</td>
+                <td {% if t.DueDate < date.today() and t.StatusID != 5 %}style="color: red;"{% endif %}>
+                    {{ t.DueDate }}
+                </td>
+                <td>
+                    <a href="{{ url_for('task_update', task_id=t.TaskID) }}" class="btn btn-sm">Обновить</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

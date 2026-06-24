@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Новая задача{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">📋 Новая задача для {{ project.ProjectName }}</div>
+    <form method="post">
+        <div class="form-group">
+            <label>Название задачи</label>
+            <input type="text" name="name" required>
+        </div>
+        <div class="form-group">
+            <label>Описание</label>
+            <textarea name="description" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Исполнитель</label>
+            <select name="assigned_to" required>
+                {% for e in employees %}
+                <option value="{{ e.UserID }}">{{ e.FullName }} ({{ e.Department or 'Без отдела' }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+                <label>Плановые часы</label>
+                <input type="number" name="planned_hours" step="0.5">
+            </div>
+            <div class="form-group">
+                <label>Срок выполнения</label>
+                <input type="date" name="due_date" required>
+            </div>
+            <div class="form-group">
+                <label>Приоритет</label>
+                <input type="number" name="priority" min="1" max="5" value="3">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-success">Создать задачу</button>
+        <a href="{{ url_for('project_detail', project_id=project.ProjectID) }}" class="btn">Отмена</a>
+    </form>
+</div>
+{% endblock %}

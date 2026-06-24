@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Загрузка сотрудников{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">👷 Загрузка сотрудников</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Сотрудник</th>
+                <th>Отдел</th>
+                <th>Всего задач</th>
+                <th>В работе</th>
+                <th>Выполнено</th>
+                <th>Плановые часы</th>
+                <th>Фактические часы</th>
+                <th>Эффективность</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for w in workload_data %}
+            <tr>
+                <td>{{ w.employee.FullName }}</td>
+                <td>{{ w.employee.Department or '-' }}</td>
+                <td>{{ w.tasks_total }}</td>
+                <td>{{ w.pending }}</td>
+                <td>{{ w.completed }}</td>
+                <td>{{ "%.1f"|format(w.planned_hours) }}</td>
+                <td>{{ "%.1f"|format(w.actual_hours) }}</td>
+                <td>
+                    <div class="progress" style="width: 100px; display: inline-block; vertical-align: middle;">
+                        <div class="progress-bar" style="width: {{ [w.efficiency, 100]|min }}%"></div>
+                    </div>
+                    {{ "%.0f"|format(w.efficiency) }}%
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

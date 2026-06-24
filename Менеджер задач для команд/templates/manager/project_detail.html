@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.ProjectName }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        📁 {{ project.ProjectCode }}: {{ project.ProjectName }}
+        <span class="badge badge-{{ project.status.StatusCode }}">{{ project.status.StatusName }}</span>
+    </div>
+    <p><strong>Заказчик:</strong> {{ project.customer.CustomerName }}</p>
+    <p><strong>Описание:</strong> {{ project.Description or 'Нет описания' }}</p>
+    <p><strong>Прогресс:</strong> {{ project.ProgressPercent }}%</p>
+    <p><strong>Срок:</strong> {{ project.StartDate }} - {{ project.PlannedEndDate }}</p>
+</div>
+
+<div class="card">
+    <div class="card-header">📊 Этапы проекта</div>
+    {% if stages %}
+    <table>
+        <thead>
+            <tr><th>№</th><th>Название</th><th>Статус</th><th>Начало</th><th>Окончание</th></tr>
+        </thead>
+        <tbody>
+            {% for s in stages %}
+            <tr>
+                <td>{{ s.StageNumber }}</td>
+                <td>{{ s.StageName }}</td>
+                <td>{{ s.status.StatusName if s.status else '-' }}</td>
+                <td>{{ s.PlannedStartDate }}</td>
+                <td>{{ s.PlannedEndDate }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Этапы не созданы</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <div class="card-header">📋 Задачи</div>
+    {% if tasks %}
+    <table>
+        <thead>
+            <tr><th>Задача</th><th>Исполнитель</th><th>Статус</th><th>Срок</th></tr>
+        </thead>
+        <tbody>
+            {% for t in tasks %}
+            <tr>
+                <td>{{ t.TaskName }}</td>
+                <td>{{ t.assignee.FullName if t.assignee else '-' }}</td>
+                <td>{{ t.status.StatusName if t.status else '-' }}</td>
+                <td>{{ t.DueDate }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Задачи не созданы</p>
+    {% endif %}
+    <a href="{{ url_for('task_create', project_id=project.ProjectID) }}" class="btn btn-success">+ Добавить задачу</a>
+</div>
+
+<!-- НОВАЯ СЕКЦИЯ: ДОКУМЕНТЫ ПРОЕКТА -->
+<div class="card">
+    <div class="card-header">
+        📎 Документы проекта ({{ documents|length }})
+        <a href="{{ url_for('project_upload', project_id=project.ProjectID) }}" class="btn btn-success btn-sm">+ Загрузить</a>
+    </div>
+    
+    {% if documents %}
+    <table>
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Тип</th>
+                <th>Файл</th>
+                <th>Размер</th>
+                <th>Загружен</th>
+                <th>Кем</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for doc in documents %}
+            <tr>
+                <td>{{ doc.DocumentName }}</td>
+                <td>{{ doc.type.TypeName if doc.type else 'Прочее' }}</td>
+                <td>{{ doc.FileName }}</td>
+                <td>{{ "%.2f"|format(doc.FileSize / 1024 / 1024) if doc.FileSize else '-' }} МБ</td>
+                <td>{{ doc.CreatedAt.strftime('%d.%m.%Y') if doc.CreatedAt else '-' }}</td>
+                <td>{{ doc.uploader.FullName if doc.uploader else '-' }}</td>
+                <td>
+                    <a href="{{ url_for('download_file', document_id=doc.DocumentID) }}" class="btn btn-sm">📥 Скачать</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Нет документов</p>
+    {% endif %}
+</div>
+{% endblock %}

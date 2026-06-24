@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Учёт рабочего времени{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">⏱ Учёт рабочего времени</div>
+    <form method="post">
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+                <label>Задача</label>
+                <select name="task_id" required>
+                    {% for t in tasks %}
+                    <option value="{{ t.TaskID }}">{{ t.project.ProjectCode }} - {{ t.TaskName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Дата</label>
+                <input type="date" name="work_date" value="{{ date.today() }}" required>
+            </div>
+            <div class="form-group">
+                <label>Часы</label>
+                <input type="number" name="hours" step="0.5" min="0.5" max="24" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Описание работы</label>
+            <textarea name="description" rows="2"></textarea>
+        </div>
+        
+        <!-- ИСПРАВЛЕННЫЙ ЧЕКБОКС -->
+        <div class="form-group checkbox-group">
+            <label class="checkbox-label">
+                <input type="checkbox" name="is_billable" checked>
+                <span>Оплачиваемое время</span>
+            </label>
+        </div>
+        
+        <button type="submit" class="btn btn-success">Записать время</button>
+    </form>
+</div>
+
+<div class="card">
+    <div class="card-header">📊 История записей</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Задача</th>
+                <th>Часы</th>
+                <th>Описание</th>
+                <th>Тип</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in entries %}
+            <tr>
+                <td>{{ e.WorkDate }}</td>
+                <td>{{ e.task.TaskName if e.task else '-' }}</td>
+                <td>{{ e.HoursWorked }}</td>
+                <td>{{ e.Description or '-' }}</td>
+                <td>{% if e.IsBillable %}💰 Оплачиваемое{% else %}🕐 Внутреннее{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

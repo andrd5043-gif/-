@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Отчёт по проектам{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        📁 Сводка по проектам
+        <a href="{{ url_for('report_projects', export='excel') }}" class="btn btn-success">📥 Excel</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Код</th>
+                <th>Название</th>
+                <th>Тип</th>
+                <th>Заказчик</th>
+                <th>Статус</th>
+                <th>Прогресс</th>
+                <th>Сроки</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in projects %}
+            <tr>
+                <td>{{ p.ProjectCode }}</td>
+                <td>{{ p.ProjectName }}</td>
+                <td>{{ p.type.TypeName }}</td>
+                <td>{{ p.customer.CustomerName }}</td>
+                <td><span class="badge badge-{{ p.status.StatusCode }}">{{ p.status.StatusName }}</span></td>
+                <td>
+                    <div class="progress">
+                        <div class="progress-bar" style="width: {{ p.ProgressPercent }}%"></div>
+                    </div>
+                    {{ p.ProgressPercent }}%
+                </td>
+                <td>{{ p.StartDate }} - {{ p.PlannedEndDate }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

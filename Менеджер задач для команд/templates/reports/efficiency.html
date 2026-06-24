@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Аналитика эффективности{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">📈 Аналитика эффективности сотрудников</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Сотрудник</th>
+                <th>Всего задач</th>
+                <th>Выполнено</th>
+                <th>% выполнения</th>
+                <th>% в срок</th>
+                <th>Точность оценки времени</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in efficiency_data %}
+            <tr>
+                <td>{{ data.employee.FullName }}</td>
+                <td>{{ data.total_tasks }}</td>
+                <td>{{ data.completed }}</td>
+                <td>
+                    <div class="progress" style="width: 100px; display: inline-block;">
+                        <div class="progress-bar" style="width: {{ data.completion_rate }}%"></div>
+                    </div>
+                    {{ "%.0f"|format(data.completion_rate) }}%
+                </td>
+                <td>{{ "%.0f"|format(data.on_time_rate) }}%</td>
+                <td>{{ "%.0f"|format(data.time_accuracy) }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

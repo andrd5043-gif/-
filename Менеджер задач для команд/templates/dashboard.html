@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Дашборд{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">📊 Обзор системы</div>
+    <div class="stats-grid">
+        {% for key, value in stats.items() %}
+        <div class="stat-card">
+            <div class="stat-value">{{ value }}</div>
+            <div class="stat-label">{{ key|replace('_', ' ')|title }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

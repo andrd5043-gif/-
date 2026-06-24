@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Создание акта{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">📋 Новый акт выполненных работ</div>
+    
+    {% if projects %}
+    <form method="post">
+        <div class="form-group">
+            <label>Проект *</label>
+            <select name="project_id" required>
+                <option value="">-- Выберите проект --</option>
+                {% for p in projects %}
+                <option value="{{ p.ProjectID }}">{{ p.ProjectCode }} - {{ p.ProjectName }} ({{ p.customer.CustomerName }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+                <label>Период с *</label>
+                <input type="date" name="period_start" required>
+            </div>
+            <div class="form-group">
+                <label>Период по *</label>
+                <input type="date" name="period_end" required>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-success">Создать акт</button>
+        <a href="{{ url_for('acts_list') }}" class="btn">Отмена</a>
+    </form>
+    {% else %}
+    <div class="alert alert-warning">
+        <p><strong>Нет доступных проектов!</strong></p>
+        <p>Возможные причины:</p>
+        <ul>
+            <li>Нет проектов в статусе "В работе" или "Завершен"</li>
+            <li>Вы не назначены менеджером ни на один проект</li>
+            <li>Проекты еще не созданы в системе</li>
+        </ul>
+        <a href="{{ url_for('projects_list') }}" class="btn">Перейти к проектам</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

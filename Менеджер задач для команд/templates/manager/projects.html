@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Проекты{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        📁 Проекты
+        <a href="{{ url_for('project_create') }}" class="btn btn-success">+ Новый проект</a>
+    </div>
+    
+    <div class="filters">
+        <form method="get" style="display: contents;">
+            <select name="status">
+                <option value="">Все статусы</option>
+                {% for s in statuses %}
+                <option value="{{ s.StatusID }}" {% if request.args.get('status')|int == s.StatusID %}selected{% endif %}>{{ s.StatusName }}</option>
+                {% endfor %}
+            </select>
+            <select name="type">
+                <option value="">Все типы</option>
+                {% for t in types %}
+                <option value="{{ t.TypeID }}" {% if request.args.get('type')|int == t.TypeID %}selected{% endif %}>{{ t.TypeName }}</option>
+                {% endfor %}
+            </select>
+            <input type="text" name="search" placeholder="Поиск..." value="{{ request.args.get('search', '') }}">
+            <button type="submit" class="btn">Фильтр</button>
+            <a href="{{ url_for('projects_list') }}" class="btn" style="background: #6c757d;">Сброс</a>
+        </form>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Код</th>
+                <th>Название</th>
+                <th>Тип</th>
+                <th>Заказчик</th>
+                <th>Статус</th>
+                <th>Прогресс</th>
+                <th>Срок</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in projects %}
+            <tr>
+                <td>{{ p.ProjectCode }}</td>
+                <td>{{ p.ProjectName }}</td>
+                <td>{{ p.type.TypeName }}</td>
+                <td>{{ p.customer.CustomerName }}</td>
+                <td><span class="badge badge-{{ p.status.StatusCode }}">{{ p.status.StatusName }}</span></td>
+                <td>
+                    <div class="progress">
+                        <div class="progress-bar" style="width: {{ p.ProgressPercent }}%"></div>
+                    </div>
+                    {{ p.ProgressPercent }}%
+                </td>
+                <td>{{ p.PlannedEndDate }}</td>
+                <td>
+                    <a href="{{ url_for('project_detail', project_id=p.ProjectID) }}" class="btn btn-sm">Открыть</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

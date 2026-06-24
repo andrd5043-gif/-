@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Редактирование пользователя{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        ✏️ Редактирование: {{ user.FullName }}
+    </div>
+    
+    <form method="post">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+                <label>ФИО *</label>
+                <input type="text" name="full_name" value="{{ user.FullName }}" required>
+            </div>
+            <div class="form-group">
+                <label>Логин *</label>
+                <input type="text" name="username" value="{{ user.Username }}" required>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+                <label>Email *</label>
+                <input type="email" name="email" value="{{ user.Email }}" required>
+            </div>
+            <div class="form-group">
+                <label>Роль *</label>
+                <select name="role_id" required>
+                    {% for role in roles %}
+                    <option value="{{ role.RoleID }}" {% if user.RoleID == role.RoleID %}selected{% endif %}>
+                        {{ role.RoleName }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+                <label>Отдел</label>
+                <input type="text" name="department" value="{{ user.Department or '' }}">
+            </div>
+            <div class="form-group">
+                <label>Должность</label>
+                <input type="text" name="position" value="{{ user.Position or '' }}">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Новый пароль (оставьте пустым, чтобы не менять)</label>
+            <input type="password" name="password" placeholder="Введите новый пароль">
+        </div>
+        
+        <!-- ИСПРАВЛЕННЫЙ ЧЕКБОКС - в одну строку -->
+        <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" name="is_active" id="is_active" {% if user.IsActive %}checked{% endif %} 
+                   style="width: auto; margin: 0;">
+            <label for="is_active" style="margin: 0; font-weight: normal; cursor: pointer;">
+                Активен (может входить в систему)
+            </label>
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <button type="submit" class="btn btn-success">💾 Сохранить изменения</button>
+            <a href="{{ url_for('admin_users') }}" class="btn">Отмена</a>
+        </div>
+    </form>
+</div>
+
+<div class="card" style="margin-top: 20px; border-left: 4px solid #dc3545;">
+    <div class="card-header" style="color: #dc3545;">⚠️ Опасная зона</div>
+    <p>Удаление пользователя нельзя отменить. Все связанные данные (задачи, записи времени) останутся в системе.</p>
+    
+    {% if user.UserID != current_user.UserID %}
+    <form method="post" action="{{ url_for('admin_delete_user', user_id=user.UserID) }}" 
+          onsubmit="return confirm('ВНИМАНИЕ: Удалить пользователя {{ user.FullName }}? Это действие нельзя отменить.')">
+        <button type="submit" class="btn btn-danger">🗑 Удалить пользователя</button>
+    </form>
+    {% else %}
+    <p style="color: #666;"><i>Нельзя удалить самого себя</i></p>
+    {% endif %}
+</div>
+{% endblock %}

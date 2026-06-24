@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Акты выполненных работ{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        📋 Акты выполненных работ
+        <a href="{{ url_for('act_create') }}" class="btn btn-success">+ Создать акт</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Номер</th>
+                <th>Проект</th>
+                <th>Период</th>
+                <th>Часы</th>
+                <th>Сумма</th>
+                <th>Статус</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in acts %}
+            <tr>
+                <td>{{ a.ActNumber }}</td>
+                <td>{{ a.project.ProjectName if a.project else '-' }}</td>
+                <td>{{ a.PeriodStart }} - {{ a.PeriodEnd }}</td>
+                <td>{{ a.TotalHours }}</td>
+                <td>{{ "%.2f"|format(a.TotalAmount) if a.TotalAmount else '0.00' }}</td>
+                <td>
+                    {% if a.Status == 'draft' %}
+                        <span class="badge badge-draft">Черновик</span>
+                    {% elif a.Status == 'approved' %}
+                        <span class="badge badge-active">Утверждён</span>
+                    {% elif a.Status == 'signed' %}
+                        <span class="badge badge-completed">Подписан</span>
+                    {% elif a.Status == 'paid' %}
+                        <span class="badge badge-completed">Оплачен</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if a.Status == 'draft' %}
+                    <form method="post" action="{{ url_for('act_approve', act_id=a.ActID) }}" style="display: inline;">
+                        <button type="submit" class="btn btn-sm btn-success">Утвердить</button>
+                    </form>
+                    {% elif a.Status == 'approved' %}
+                    <form method="post" action="{{ url_for('act_sign', act_id=a.ActID) }}" style="display: inline;">
+                        <button type="submit" class="btn btn-sm">Подписать</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

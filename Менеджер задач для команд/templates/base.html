@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Project Management{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% if current_user.is_authenticated %}
+    <header class="header">
+        <div class="header-brand">
+            <h1>📊 Project Management System</h1>
+        </div>
+        <div class="user-info">
+            <span class="user-name">{{ current_user.FullName }}</span>
+            <span class="user-role">{{ current_user.role.RoleName }}</span>
+            <a href="{{ url_for('logout') }}" class="logout">Выйти</a>
+        </div>
+    </header>
+    
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                <span class="nav-icon">📈</span>
+                <span class="nav-text">Дашборд</span>
+            </a>
+            
+            {% if current_user.is_admin() %}
+            <a href="{{ url_for('admin_users') }}" class="nav-link {% if 'admin' in request.endpoint %}active{% endif %}">
+                <span class="nav-icon">👥</span>
+                <span class="nav-text">Пользователи</span>
+            </a>
+            <a href="{{ url_for('admin_classifiers') }}" class="nav-link {% if 'classifiers' in request.endpoint %}active{% endif %}">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-text">Классификаторы</span>
+            </a>
+            {% endif %}
+            
+            {% if current_user.is_manager() or current_user.is_admin() %}
+            <a href="{{ url_for('projects_list') }}" class="nav-link {% if 'project' in request.endpoint %}active{% endif %}">
+                <span class="nav-icon">📁</span>
+                <span class="nav-text">Проекты</span>
+            </a>
+            <a href="{{ url_for('workload') }}" class="nav-link {% if 'workload' in request.endpoint %}active{% endif %}">
+                <span class="nav-icon">👷</span>
+                <span class="nav-text">Загрузка</span>
+            </a>
+            <a href="{{ url_for('acts_list') }}" class="nav-link {% if 'act' in request.endpoint %}active{% endif %}">
+                <span class="nav-icon">📋</span>
+                <span class="nav-text">Акты</span>
+            </a>
+            {% endif %}
+            
+            {% if current_user.is_employee() %}
+            <a href="{{ url_for('my_tasks') }}" class="nav-link {% if 'task' in request.endpoint %}active{% endif %}">
+                <span class="nav-icon">📋</span>
+                <span class="nav-text">Мои задачи</span>
+            </a>
+            <a href="{{ url_for('time_entries') }}" class="nav-link {% if 'time' in request.endpoint %}active{% endif %}">
+                <span class="nav-icon">⏱</span>
+                <span class="nav-text">Учёт времени</span>
+            </a>
+            {% endif %}
+            
+            <a href="{{ url_for('reports') }}" class="nav-link {% if 'report' in request.endpoint %}active{% endif %}">
+                <span class="nav-icon">📊</span>
+                <span class="nav-text">Отчёты</span>
+            </a>
+        </div>
+    </nav>
+    {% endif %}
+    
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <span class="alert-icon">{% if category == 'success' %}✓{% elif category == 'error' or category == 'danger' %}✕{% else %}ℹ{% endif %}</span>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
